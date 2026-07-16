@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw × Paperclip — Company Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e6f0;
+    --muted: #7a7890;
+    --dim: #3a3850;
+
+    --purple: #a78bfa;
+    --purple-bg: rgba(167,139,250,0.08);
+    --purple-border: rgba(167,139,250,0.25);
+
+    --teal: #2dd4bf;
+    --teal-bg: rgba(45,212,191,0.08);
+    --teal-border: rgba(45,212,191,0.25);
+
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.08);
+    --amber-border: rgba(251,191,36,0.25);
+
+    --coral: #fb7185;
+    --coral-bg: rgba(251,113,133,0.08);
+    --coral-border: rgba(251,113,133,0.25);
+
+    --blue: #60a5fa;
+    --blue-bg: rgba(96,165,250,0.08);
+    --blue-border: rgba(96,165,250,0.25);
+
+    --gray-bg: rgba(255,255,255,0.04);
+    --gray-border: rgba(255,255,255,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 32px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HEADER ── */
+  header {
+    margin-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 6vw, 52px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    color: var(--purple);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 520px;
+    font-weight: 300;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  section { margin-bottom: 72px; }
+
+  /* ── ORG CHART SVG ── */
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 40px 24px 32px;
+    overflow-x: auto;
+  }
+
+  .chart-wrap svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-width: 680px;
+  }
+
+  /* SVG text classes */
+  .th { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; fill: var(--text); }
+  .ts { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400; fill: var(--muted); }
+
+  /* ── AGENT CARDS ── */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .agent-grid { grid-template-columns: 1fr; }
+  }
+
+  .agent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .agent-card:hover { border-color: var(--border2); }
+
+  .agent-card.full { grid-column: 1 / -1; }
+
+  .agent-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot.purple { background: var(--purple); }
+  .dot.teal   { background: var(--teal); }
+  .dot.coral  { background: var(--coral); }
+  .dot.amber  { background: var(--amber); }
+  .dot.blue   { background: var(--blue); }
+
+  .agent-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .agent-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .tag.purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .tag.teal   { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-border); }
+  .tag.coral  { background: var(--coral-bg);  color: var(--coral);  border: 1px solid var(--coral-border); }
+  .tag.amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .tag.blue   { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-border); }
+  .tag.gray   { background: var(--gray-bg);   color: var(--muted);  border: 1px solid var(--gray-border); }
+
+  .agent-detail {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .kv-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .kv-key { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; }
+  .kv-val { color: var(--text); font-family: 'DM Mono', monospace; font-size: 11px; text-align: right; }
+
+  /* ── FLOW ── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .flow-step {
+    flex: 1;
+    min-width: 140px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 20px 18px;
+    position: relative;
+  }
+  .flow-step:first-child { border-radius: 12px 0 0 12px; }
+  .flow-step:last-child  { border-radius: 0 12px 12px 0; }
+  .flow-step + .flow-step { border-left: none; }
+
+  .flow-step::after {
+    content: '→';
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--dim);
+    font-size: 18px;
+    z-index: 2;
+  }
+  .flow-step:last-child::after { display: none; }
+
+  .flow-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    margin-bottom: 6px;
+  }
+
+  .flow-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .flow-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── PLAN / PHASES ── */
+  .phases { display: flex; flex-direction: column; gap: 0; }
+
+  .phase {
+    display: flex;
+    gap: 24px;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+  }
+  .phase:last-child { border-bottom: 1px solid var(--border); }
+
+  .phase-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--purple);
+    min-width: 32px;
+    padding-top: 2px;
+  }
+
+  .phase-body { flex: 1; }
+
+  .phase-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .phase-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .phase-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    line-height: 1.75;
+  }
+
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .checklist li::before {
+    content: '○';
+    color: var(--dim);
+    font-size: 12px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--amber);
+  }
+
+  .cmd-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    line-height: 2;
+    margin-top: 14px;
+    overflow-x: auto;
+  }
+
+  .cmd-block .comment { color: var(--dim); }
+
+  /* ── ALERT / INFO BOX ── */
+  .info-box {
+    background: var(--purple-bg);
+    border: 1px solid var(--purple-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 16px;
+  }
+  .info-box strong { color: var(--purple); font-weight: 500; }
+
+  .warn-box {
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 16px;
+  }
+  .warn-box strong { color: var(--amber); font-weight: 500; }
+
+  /* ── ADAPTER TABLE ── */
+  .adapter-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .adapter-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .adapter-table td {
+    padding: 14px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .adapter-table tr:last-child td { border-bottom: none; }
+  .adapter-table td:first-child { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--teal); }
+  .adapter-table td:nth-child(2) { color: var(--text); }
+  .adapter-table td:last-child { color: var(--muted); font-size: 12px; }
+
+  /* footer */
+  footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="eyebrow">Architecture Blueprint · v2026.4</div>
+    <h1>OpenClaw <span>×</span> Paperclip</h1>
+    <p class="subtitle">A complete mapping of your self-hosted agent stack into a Paperclip zero-human company — with a step-by-step implementation plan.</p>
+  </header>
+
+  <!-- ORG CHART -->
+  <section>
+    <div class="section-label">Company org chart</div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 760 600" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#3a3850" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- Board operator -->
+        <rect x="280" y="20" width="200" height="48" rx="8" fill="#16161f" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <text x="380" y="40" text-anchor="middle" font-family="Syne, sans-serif" font-size="13" font-weight="700" fill="#e8e6f0">You (board operator)</text>
+        <text x="380" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#7a7890">Strategy · approvals · budget</text>
+
+        <!-- line board → CEO -->
+        <line x1="380" y1="68" x2="380" y2="106" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <!-- CEO: TheOne -->
+        <rect x="230" y="110" width="300" height="52" rx="8" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+        <text x="380" y="131" text-anchor="middle" font-family="Syne, sans-serif" font-size="14" font-weight="700" fill="#a78bfa">TheOne — CEO agent</text>
+        <text x="380" y="150" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#7a7890">openclaw_gateway · main · gemini-2.5-flash</text>
+
+        <!-- CEO → Scout -->
+        <line x1="310" y1="162" x2="180" y2="228" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- CEO → Pipeline -->
+        <line x1="380" y1="162" x2="380" y2="228" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- CEO → Spark -->
+        <line x1="450" y1="162" x2="580" y2="228" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <!-- Scout -->
+        <rect x="60" y="228" width="240" height="52" rx="8" fill="rgba(45,212,191,0.08)" stroke="rgba(45,212,191,0.25)" stroke-width="1"/>
+        <text x="180" y="249" text-anchor="middle" font-family="Syne, sans-serif" font-size="13" font-weight="700" fill="#2dd4bf">Scout — research agent</text>
+        <text x="180" y="268" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#7a7890">openclaw_gateway · research · Tavily + Brave</text>
+
+        <!-- Pipeline agent -->
+        <rect x="258" y="228" width="244" height="52" rx="8" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.25)" stroke-width="1"/>
+        <text x="380" y="249" text-anchor="middle" font-family="Syne, sans-serif" font-size="13" font-weight="700" fill="#fbbf24">LinkedIn pipeline agent</text>
+        <text x="380" y="268" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#7a7890">process adapter · Apify + MySQL + Pipedrive</text>
+
+        <!-- Spark -->
+        <rect x="460" y="228" width="240" height="52" rx="8" fill="rgba(251,113,133,0.08)" stroke="rgba(251,113,133,0.25)" stroke-width="1"/>
+        <text x="580" y="249" text-anchor="middle" font-family="Syne, sans-serif" font-size="13" font-weight="700" fill="#fb7185">Spark — social agent</text>
+        <text x="580" y="268" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#7a7890">openclaw_gateway · social · reply generation</text>
+
+        <!-- adapter labels -->
+        <text x="380" y="308" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#3a3850">↓  adapters  ↓</text>
+
+        <!-- Scout adapter -->
+        <rect x="60" y="320" width="240" height="44" rx="8" fill="#16161f" stroke="rgba(45,212,191,0.2)" stroke-width="1"/>
+        <text x="180" y="338" text-anchor="middle" font-family="Syne, sans-serif" font-size="12" font-weight="700" fill="#2dd4bf">openclaw_gateway</text>
+        <text x="180" y="354" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#7a7890">thinkcentre.tail…ts.net · research</text>
+        <line x1="180" y1="280" x2="180" y2="320" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <!-- Pipeline adapter -->
+        <rect x="258" y="320" width="244" height="44" rx="8" fill="#16161f" stroke="rgba(251,191,36,0.2)" stroke-width="1"/>
+        <text x="380" y="338" text-anchor="middle" font-family="Syne, sans-serif" font-size="12" font-weight="700" fill="#fbbf24">process adapter</text>
+        <text x="380" y="354" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#7a7890">node pipeline.js · Hostinger VPS</text>
+        <line x1="380" y1="280" x2="380" y2="320" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <!-- Spark adapter -->
+        <rect x="460" y="320" width="240" height="44" rx="8" fill="#16161f" stroke="rgba(251,113,133,0.2)" stroke-width="1"/>
+        <text x="580" y="338" text-anchor="middle" font-family="Syne, sans-serif" font-size="12" font-weight="700" fill="#fb7185">openclaw_gateway</text>
+        <text x="580" y="354" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#7a7890">thinkcentre.tail…ts.net · social</text>
+        <line x1="580" y1="280" x2="580" y2="320" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <!-- divider -->
+        <line x1="40" y1="386" x2="720" y2="386" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="380" y="402" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#3a3850">issue lifecycle</text>
+
+        <!-- Flow boxes -->
+        <rect x="40"  y="414" width="120" height="44" rx="6" fill="#16161f" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="100" y="431" text-anchor="middle" font-family="Syne, sans-serif" font-size="11" font-weight="700" fill="#7a7890">backlog</text>
+        <text x="100" y="448" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#3a3850">leads queued</text>
+
+        <line x1="160" y1="436" x2="188" y2="436" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <rect x="188" y="414" width="130" height="44" rx="6" fill="#16161f" stroke="rgba(251,191,36,0.2)" stroke-width="1"/>
+        <text x="253" y="431" text-anchor="middle" font-family="Syne, sans-serif" font-size="11" font-weight="700" fill="#fbbf24">in_progress</text>
+        <text x="253" y="448" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#3a3850">pipeline running</text>
+
+        <line x1="318" y1="436" x2="346" y2="436" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <rect x="346" y="414" width="130" height="44" rx="6" fill="#16161f" stroke="rgba(251,113,133,0.2)" stroke-width="1"/>
+        <text x="411" y="431" text-anchor="middle" font-family="Syne, sans-serif" font-size="11" font-weight="700" fill="#fb7185">in_review</text>
+        <text x="411" y="448" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#3a3850">Spark drafts reply</text>
+
+        <line x1="476" y1="436" x2="504" y2="436" stroke="#3a3850" stroke-width="1" marker-end="url(#arr)"/>
+
+        <rect x="504" y="414" width="110" height="44" rx="6" fill="#16161f" stroke="rgba(45,212,191,0.2)" stroke-width="1"/>
+        <text x="559" y="431" text-anchor="middle" font-family="Syne, sans-serif" font-size="11" font-weight="700" fill="#2dd4bf">done</text>
+        <text x="559" y="448" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#3a3850">Pipedrive activity</text>
+
+        <!-- Paperclip adds row -->
+        <line x1="40" y1="478" x2="720" y2="478" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="380" y="494" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="#3a3850">what paperclip adds</text>
+
+        <rect x="40"  y="506" width="150" height="44" rx="6" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)" stroke-width="1"/>
+        <text x="115" y="524" text-anchor="middle" font-family="Syne, sans-serif" font-size="12" font-weight="700" fill="#60a5fa">Audit trail</text>
+        <text x="115" y="540" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#7a7890">every task logged</text>
+
+        <rect x="208" y="506" width="150" height="44" rx="6" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)" stroke-width="1"/>
+        <text x="283" y="524" text-anchor="middle" font-family="Syne, sans-serif" font-size="12" font-weight="700" fill="#60a5fa">Spend tracking</text>
+        <text x="283" y="540" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#7a7890">per agent, per task</text>
+
+        <rect x="376" y="506" width="150" height="44" rx="6" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)" stroke-width="1"/>
+        <text x="451" y="524" text-anchor="middle" font-family="Syne, sans-serif" font-size="12" font-weight="700" fill="#60a5fa">Board approvals</text>
+        <text x="451" y="540" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#7a7890">hire gates, strategy</text>
+
+        <rect x="544" y="506" width="176" height="44" rx="6" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)" stroke-width="1"/>
+        <text x="632" y="524" text-anchor="middle" font-family="Syne, sans-serif" font-size="12" font-weight="700" fill="#60a5fa">Clipmart templates</text>
+        <text x="632" y="540" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10" fill="#7a7890">export &amp; share company</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- AGENT DETAILS -->
+  <section>
+    <div class="section-label">Agent details</div>
+    <div class="agent-grid">
+
+      <!-- TheOne -->
+      <div class="agent-card full">
+        <div class="agent-header">
+          <div class="dot purple"></div>
+          <div>
+            <div class="agent-name">TheOne (@Adamastor_the_AI_bot)</div>
+            <div class="agent-role">CEO agent · main · Paperclip adapter: openclaw_gateway</div>
+          </div>
+        </div>
+        <p class="agent-detail">
+          TheOne is the CEO of your Paperclip company. It receives the company goal from you (the board), breaks it into projects, and delegates tasks to Scout and Spark. In Paperclip, the CEO agent's initial strategic plan requires board approval before any work starts — so you keep full control of the direction. Every task it delegates is a Paperclip issue with a defined owner, status, and audit trail.
+        </p>
+        <div style="margin-bottom: 12px;">
+          <span class="tag purple">openclaw_gateway</span>
+          <span class="tag purple">main agent</span>
+          <span class="tag gray">gemini-2.5-flash</span>
+          <span class="tag gray">memory: active-memory + memory-core</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Paperclip adapter type</span>
+          <span class="kv-val">openclaw_gateway</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Gateway URL</span>
+          <span class="kv-val">https://thinkcentre.tail13ae6a.ts.net</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Heartbeat trigger</span>
+          <span class="kv-val">schedule + assignment + board approval</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Reports to</span>
+          <span class="kv-val">You (board operator)</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Direct reports</span>
+          <span class="kv-val">Scout · LinkedIn Pipeline · Spark</span>
+        </div>
+        <div class="info-box">
+          <strong>Board approval required</strong> — TheOne cannot hire new agents or change strategy without your sign-off in the Paperclip UI. This is your primary governance gate.
+        </div>
+      </div>
+
+      <!-- Scout -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="dot teal"></div>
+          <div>
+            <div class="agent-name">Scout (@Scout_Claw_bot)</div>
+            <div class="agent-role">Research agent · research</div>
+          </div>
+        </div>
+        <p class="agent-detail">
+          Scout handles all information gathering — competitive radar, prospect research, market intelligence. In Paperclip it wakes up on heartbeat (replacing your Monday 8am cron) and reports findings back as issue comments that TheOne can act on.
+        </p>
+        <div style="margin-bottom: 12px;">
+          <span class="tag teal">openclaw_gateway</span>
+          <span class="tag teal">research</span>
+          <span class="tag gray">Tavily + Brave search</span>
+          <span class="tag gray">tools.profile: full</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Adapter</span>
+          <span class="kv-val">openclaw_gateway · research</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Heartbeat</span>
+          <span class="kv-val">Monday 8am → replaces Competitive Radar cron</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Existing cron id</span>
+          <span class="kv-val">b098781f</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Delivery</span>
+          <span class="kv-val">Paperclip issue comment + Telegram</span>
+        </div>
+      </div>
+
+      <!-- Spark -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="dot coral"></div>
+          <div>
+            <div class="agent-name">Spark (@Spark_TheSocial_bot)</div>
+            <div class="agent-role">Social agent · social</div>
+          </div>
+        </div>
+        <p class="agent-detail">
+          Spark handles all LinkedIn reply generation. It receives an issue from the pipeline agent — containing post content, commenter enrichment, and headline — and produces a 2–4 sentence personalised reply. The issue moves to <code>in_review</code> and you approve or reject before it writes to Pipedrive.
+        </p>
+        <div style="margin-bottom: 12px;">
+          <span class="tag coral">openclaw_gateway</span>
+          <span class="tag coral">social</span>
+          <span class="tag gray">reply generation</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Adapter</span>
+          <span class="kv-val">openclaw_gateway · social</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Heartbeat trigger</span>
+          <span class="kv-val">assignment (from pipeline agent)</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">In_review gate</span>
+          <span class="kv-val">board approval before Pipedrive write</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Quality check</span>
+          <span class="kv-val">no generic openers · SOUL.md enforced</span>
+        </div>
+      </div>
+
+      <!-- Pipeline agent -->
+      <div class="agent-card full">
+        <div class="agent-header">
+          <div class="dot amber"></div>
+          <div>
+            <div class="agent-name">LinkedIn pipeline agent</div>
+            <div class="agent-role">Automation agent · Hostinger VPS · process adapter</div>
+          </div>
+        </div>
+        <p class="agent-detail">
+          This is your existing <code>node pipeline.js</code> running on the Hostinger VPS, unchanged. In Paperclip it becomes an agent using the <code>process</code> adapter — Paperclip triggers it via a heartbeat (daily 8am), the pipeline runs, and each processed commenter becomes a Paperclip issue assigned to Spark. No rewrite needed.
+        </p>
+        <div style="margin-bottom: 12px;">
+          <span class="tag amber">process adapter</span>
+          <span class="tag amber">Hostinger VPS</span>
+          <span class="tag gray">Apify scraper</span>
+          <span class="tag gray">MySQL · Pipedrive</span>
+          <span class="tag gray">OpenRouter · claude-3.5-haiku</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Adapter type</span>
+          <span class="kv-val">process (or http if Paperclip on separate host)</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Command</span>
+          <span class="kv-val">node /home/linkedin/pipeline.js</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Heartbeat</span>
+          <span class="kv-val">daily 8am → replaces node-cron in index.js</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Monthly cost</span>
+          <span class="kv-val">~$51/mo (Hostinger $13 + Apify $27 + OpenRouter $11)</span>
+        </div>
+        <div class="warn-box">
+          <strong>Tailscale constraint:</strong> If you install Paperclip on a separate machine, use the <code>http</code> adapter with an n8n webhook on port 5679 (already public) to trigger the pipeline. Simplest path: install Paperclip on thinkcentre alongside OpenClaw.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ADAPTER REFERENCE -->
+  <section>
+    <div class="section-label">Adapter reference</div>
+    <div class="chart-wrap" style="padding: 0; overflow: hidden;">
+      <table class="adapter-table">
+        <thead>
+          <tr>
+            <th>Adapter type</th>
+            <th>Used for</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>openclaw_gateway</td>
+            <td>TheOne, Scout, Spark — all three OpenClaw agents</td>
+            <td>Built into Paperclip. Sends a wake payload to your OpenClaw gateway URL. Agent wakes, does the work, phones back to Paperclip API.</td>
+          </tr>
+          <tr>
+            <td>process</td>
+            <td>LinkedIn pipeline agent on Hostinger VPS</td>
+            <td>Paperclip runs a shell command directly. Best if Paperclip is installed on the same host or accessible via SSH. Zero code changes to pipeline.js.</td>
+          </tr>
+          <tr>
+            <td>http</td>
+            <td>LinkedIn pipeline via n8n webhook (fallback)</td>
+            <td>Use this if Paperclip is on a separate machine. POST to your n8n endpoint on port 5679 which triggers the pipeline. n8n is already public.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- IMPLEMENTATION PLAN -->
+  <section>
+    <div class="section-label">Implementation plan</div>
+    <div class="phases">
+
+      <div class="phase">
+        <div class="phase-num">01</div>
+        <div class="phase-body">
+          <div class="phase-title">Install Paperclip on thinkcentre</div>
+          <div class="phase-time">Day 1 · ~30 min</div>
+          <p class="phase-desc">
+            Paperclip is an npm package, just like OpenClaw. Install it on the same thinkcentre server — it'll share the Tailscale network and can reach your OpenClaw gateway directly. No new infrastructure needed.
+          </p>
+          <ul class="checklist">
+            <li>SSH into thinkcentre as jbota: <code>ssh jbota</code></li>
+            <li>Run the onboard wizard: <code>npx paperclipai onboard --yes</code></li>
+            <li>Set up the database (SQLite is fine to start) and auth when prompted</li>
+            <li>Open the Paperclip UI in the browser (Tailscale-accessible URL it gives you)</li>
+            <li>Verify it's running: check the dashboard loads</li>
+          </ul>
+          <div class="cmd-block">
+            <span class="comment"># on thinkcentre (ssh jbota)</span><br>
+            npx paperclipai onboard --yes<br>
+            <span class="comment"># follow the interactive setup for DB + auth</span><br>
+            <span class="comment"># it will give you a local URL to open</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num">02</div>
+        <div class="phase-body">
+          <div class="phase-title">Create your company and set the goal</div>
+          <div class="phase-time">Day 1 · ~15 min</div>
+          <p class="phase-desc">
+            In Paperclip, every company starts with a mission statement. This is what TheOne will read every time it wakes up on a heartbeat. Keep it specific and measurable.
+          </p>
+          <ul class="checklist">
+            <li>In the Paperclip UI, click "New company"</li>
+            <li>Name: <strong>Outreach Co.</strong> (or whatever fits)</li>
+            <li>Goal: <em>"Generate qualified B2B leads via automated LinkedIn outreach and personalised reply generation — targeting 50 qualified contacts per week"</em></li>
+            <li>Set a monthly budget cap (start with €100 to be safe)</li>
+            <li>You are the board operator — no other users needed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num">03</div>
+        <div class="phase-body">
+          <div class="phase-title">Register TheOne as CEO agent</div>
+          <div class="phase-time">Day 1 · ~20 min</div>
+          <p class="phase-desc">
+            Add TheOne as the first employee. Use the <code>openclaw_gateway</code> adapter and point it at your existing gateway URL. Paperclip will send it a heartbeat payload — OpenClaw receives it and wakes TheOne up exactly as it does now via Telegram.
+          </p>
+          <ul class="checklist">
+            <li>In Paperclip UI → Employees → Hire agent</li>
+            <li>Name: TheOne · Title: CEO · No manager (reports to board)</li>
+            <li>Adapter type: <code>openclaw_gateway</code></li>
+            <li>Gateway URL: <code>https://thinkcentre.tail13ae6a.ts.net</code></li>
+            <li>Agent ID: <code>main</code></li>
+            <li>Set monthly budget: €40 (Gemini Flash is cheap)</li>
+            <li>Trigger a manual heartbeat and confirm TheOne wakes up in Telegram</li>
+          </ul>
+          <div class="info-box">
+            <strong>Board approval gate:</strong> After TheOne's first heartbeat it will produce a strategic plan and propose hiring Scout, Spark, and the pipeline agent as subordinates. You'll see an approval request in the Paperclip UI. Review and approve each one.
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num">04</div>
+        <div class="phase-body">
+          <div class="phase-title">Register Scout and Spark as direct reports</div>
+          <div class="phase-time">Day 2 · ~30 min</div>
+          <p class="phase-desc">
+            Same process as TheOne, but with different agent IDs and roles. Scout and Spark already exist in OpenClaw — you're just giving Paperclip the keys to wake them up.
+          </p>
+          <ul class="checklist">
+            <li>Scout: adapter <code>openclaw_gateway</code>, agent ID <code>research</code>, reports to TheOne</li>
+            <li>Spark: adapter <code>openclaw_gateway</code>, agent ID <code>social</code>, reports to TheOne</li>
+            <li>Replicate Scout's existing Competitive Radar cron as a Paperclip heartbeat: Monday 8am schedule</li>
+            <li>Replicate TheOne's Morning Briefing cron: weekdays 7am schedule</li>
+            <li>Test both heartbeats manually — confirm Telegram messages arrive as before</li>
+            <li>Once confirmed, disable the old OpenClaw cron jobs to avoid duplicate runs</li>
+          </ul>
+          <div class="warn-box">
+            <strong>Don't delete crons yet</strong> — disable them first (<code>active: false</code> in jobs.json) and run for 3 days in parallel. Only remove them once you're confident Paperclip heartbeats are firing reliably.
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num">05</div>
+        <div class="phase-body">
+          <div class="phase-title">Register the LinkedIn pipeline as a process agent</div>
+          <div class="phase-time">Day 2–3 · ~45 min</div>
+          <p class="phase-desc">
+            This is the most impactful step. Your pipeline currently runs on its own schedule in PM2. Paperclip takes over as the scheduler — and starts creating issues for each processed commenter, which Spark picks up automatically.
+          </p>
+          <ul class="checklist">
+            <li>In Paperclip UI → Employees → Hire agent</li>
+            <li>Name: LinkedIn Pipeline · Title: Data Engineer · Reports to TheOne</li>
+            <li>Adapter type: <code>process</code></li>
+            <li>Command: <code>ssh linkedin 'node /home/linkedin/linkedin-pipeline/pipeline.js'</code></li>
+            <li>Heartbeat: daily 8am (replaces node-cron in index.js)</li>
+            <li>Add a small modification to pipeline.js: after each comment is processed, POST to the Paperclip API to create an issue assigned to Spark</li>
+            <li>In PM2: stop the scheduler (<code>pm2 stop linkedin-pipeline</code>) — keep the process available but let Paperclip call it</li>
+            <li>Test with a single profile, verify issue appears in Paperclip and Spark wakes up</li>
+          </ul>
+          <div class="cmd-block">
+            <span class="comment"># small addition to pipeline.js after generateReply()</span><br>
+            await fetch(`${process.env.PAPERCLIP_API_URL}/issues`, {<br>
+            &nbsp;&nbsp;method: 'POST',<br>
+            &nbsp;&nbsp;headers: { Authorization: `Bearer ${process.env.PAPERCLIP_API_KEY}` },<br>
+            &nbsp;&nbsp;body: JSON.stringify({<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;title: `Reply to ${commenterName} on LinkedIn`,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;description: suggestedReply,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;assigneeId: 'spark-agent-id',<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;status: 'in_review'<br>
+            &nbsp;&nbsp;})<br>
+            });
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num">06</div>
+        <div class="phase-body">
+          <div class="phase-title">Set up the in_review gate for Spark</div>
+          <div class="phase-time">Day 3 · ~20 min</div>
+          <p class="phase-desc">
+            Instead of writing directly to Pipedrive, Spark's output waits in Paperclip as an <code>in_review</code> issue. You approve in the UI → it moves to <code>done</code> and a webhook writes the Pipedrive activity. This gives you quality control and a full audit trail of every reply.
+          </p>
+          <ul class="checklist">
+            <li>In Paperclip, configure Spark's issues to require board approval at <code>in_review</code></li>
+            <li>Create a Paperclip webhook: on issue status → done, POST to a small Express endpoint on the Hostinger VPS</li>
+            <li>That endpoint calls your existing <code>pipedrive.js</code> createActivity function</li>
+            <li>Test the full loop: pipeline → Paperclip issue → Spark reply → you approve → Pipedrive activity</li>
+            <li>Update Spark's SOUL.md to reference the Paperclip issue context format</li>
+          </ul>
+          <div class="info-box">
+            <strong>Optional upgrade:</strong> After a week of approvals, if Spark's quality is consistently good, remove the board gate and let issues move straight from in_review → done automatically. You've calibrated Spark's SOUL.md by then.
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num">07</div>
+        <div class="phase-body">
+          <div class="phase-title">Run for 2 weeks, then decide on the startup angle</div>
+          <div class="phase-time">Week 2–3 · ongoing</div>
+          <p class="phase-desc">
+            With Paperclip running, you now have real data: which agents cost the most per task, what the pipeline outputs per day, how often you approve vs reject Spark's replies. This data is your pitch deck. Two angles worth evaluating once you have 2 weeks of data:
+          </p>
+          <ul class="checklist">
+            <li><strong>Productise your pipeline:</strong> Your LinkedIn enrichment → reply → CRM flow is a sellable SaaS. Paperclip's Clipmart lets you export the whole company structure as a template others can import.</li>
+            <li><strong>Offer it as a service:</strong> Run the pipeline for other founders/sales teams on their LinkedIn profiles. Paperclip's multi-company support means one install can serve 10+ clients with full data isolation.</li>
+            <li>Export a Clipmart template of your company structure once it's stable</li>
+            <li>Document cost per lead (Apify + OpenRouter + Gemini per qualified contact)</li>
+            <li>Identify the one workflow that saves the most time → that's your wedge</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COST SNAPSHOT -->
+  <section>
+    <div class="section-label">Current cost baseline</div>
+    <div class="agent-grid">
+      <div class="agent-card">
+        <div class="kv-row" style="border-top: none; padding-top: 0;">
+          <span class="kv-key">Hostinger VPS (8GB)</span>
+          <span class="kv-val" style="color: var(--amber);">$13/mo</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Apify (scraping + enrichment)</span>
+          <span class="kv-val" style="color: var(--amber);">$27/mo</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">OpenRouter (reply generation)</span>
+          <span class="kv-val" style="color: var(--amber);">$11/mo</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">OpenClaw (Gemini Flash)</span>
+          <span class="kv-val" style="color: var(--muted);">~$0 (free tier)</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Paperclip (self-hosted)</span>
+          <span class="kv-val" style="color: var(--teal);">$0</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key" style="color: var(--text); font-size: 12px;">Total</span>
+          <span class="kv-val" style="color: var(--text); font-size: 13px;">~$51/mo</span>
+        </div>
+      </div>
+      <div class="agent-card">
+        <p class="agent-detail" style="font-size: 13px;">
+          Paperclip is open-source and fully self-hosted — it adds €0 to your monthly cost. The only new overhead is the thinkcentre running one more Node.js process, which it can handle easily.<br><br>
+          At $51/mo, if your pipeline qualifies even 5 leads per month that convert to any kind of deal, the economics already work. The Paperclip layer makes this auditable and sellable.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>openclaw × paperclip · blueprint v1.0</span>
+    <span>generated April 2026</span>
+  </footer>
+
+</div>
+</body>
+</html>
